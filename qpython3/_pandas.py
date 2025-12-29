@@ -115,7 +115,7 @@ class PandasQReader(QReader):
             if -abs(qtype) not in [QMONTH, QDATE, QDATETIME, QMINUTE, QSECOND,
                                    QTIME, QTIMESTAMP, QTIMESPAN, QSYMBOL]:
                 null = QNULLMAP[-abs(qtype)][1]
-                ps = pd.Series(data=qlist).replace(null, np.NaN)
+                ps = pd.Series(data=qlist).replace(null, np.nan)
             else:
                 ps = pd.Series(data=qlist)
 
