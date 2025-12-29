@@ -23,10 +23,10 @@ if sys.version > '3':
     long = int
 
 from collections import OrderedDict
-from qpython3 import qreader
-from qpython3.qtype import *  # @UnusedWildImport
-from qpython3.qcollection import qlist, QList, QTemporalList, QDictionary, qtable, QKeyedTable, QTable
-from qpython3.qtemporal import qtemporal, QTemporal
+from qpython import qreader
+from qpython.qtype import *  # @UnusedWildImport
+from qpython.qcollection import qlist, QList, QTemporalList, QDictionary, qtable, QKeyedTable, QTable
+from qpython.qtemporal import qtemporal, QTemporal
 
 
 

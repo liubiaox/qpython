@@ -21,9 +21,9 @@ import time
 from datetime import datetime
 
 import numpy as np
-from qpython3 import qconnection
-from qpython3.qcollection import qlist
-from qpython3.qtype import QException, QTIME_LIST, QSYMBOL_LIST, QFLOAT_LIST
+from qpython import qconnection
+from qpython.qcollection import qlist
+from qpython.qtype import QException, QTIME_LIST, QSYMBOL_LIST, QFLOAT_LIST
 
 
 class PublisherThread(threading.Thread):

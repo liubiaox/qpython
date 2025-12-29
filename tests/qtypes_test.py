@@ -20,10 +20,10 @@ import sys
 if sys.version > '3':
     long = int
 
-from qpython3.qtype import *  # @UnusedWildImport
-from qpython3.qcollection import *  # @UnusedWildImport
-from qpython3.qtemporal import * # @UnusedWildImport
-from qpython3.qtemporal import _MILLIS_PER_DAY
+from qpython.qtype import *  # @UnusedWildImport
+from qpython.qcollection import *  # @UnusedWildImport
+from qpython.qtemporal import * # @UnusedWildImport
+from qpython.qtemporal import _MILLIS_PER_DAY
 
 
 def test_is_null():

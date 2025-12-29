@@ -19,11 +19,11 @@ import struct
 from io import BytesIO
 
 from collections import OrderedDict
-from qpython3 import MetaData
-from qpython3._pandas import PandasQReader, PandasQWriter
-from qpython3.qtype import *  # @UnusedWildImport
-from qpython3.qcollection import qlist, QList, QTemporalList, QDictionary
-from qpython3.qtemporal import QTemporal
+from qpython import MetaData
+from qpython._pandas import PandasQReader, PandasQWriter
+from qpython.qtype import *  # @UnusedWildImport
+from qpython.qcollection import qlist, QList, QTemporalList, QDictionary
+from qpython.qtemporal import QTemporal
 
 import pandas as pd
 

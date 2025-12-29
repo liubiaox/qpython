@@ -14,7 +14,7 @@
 #  limitations under the License.
 # 
 
-from qpython3 import qconnection
+from qpython import qconnection
 
 
 if __name__ == '__main__':

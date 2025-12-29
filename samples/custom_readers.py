@@ -16,9 +16,9 @@
 
 import numpy as np
 
-from qpython3 import qconnection
-from qpython3.qreader import QReader
-from qpython3.qtype import QSYMBOL, QSYMBOL_LIST, Mapper
+from qpython import qconnection
+from qpython.qreader import QReader
+from qpython.qtype import QSYMBOL, QSYMBOL_LIST, Mapper
 
 
 class StringQReader(QReader):

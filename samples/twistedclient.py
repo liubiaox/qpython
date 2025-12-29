@@ -19,9 +19,9 @@ import sys
 
 from twisted.internet.protocol import Protocol, ClientFactory
 from twisted.internet import reactor
-from qpython3.qconnection import MessageType, QAuthenticationException
-from qpython3.qreader import QReader
-from qpython3.qwriter import QWriter, QWriterException
+from qpython.qconnection import MessageType, QAuthenticationException
+from qpython.qreader import QReader
+from qpython.qwriter import QWriter, QWriterException
 
 
 class IPCProtocol(Protocol):

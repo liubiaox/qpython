@@ -22,7 +22,7 @@ __version__ = '3.0.0dev0'
 
 
 try:
-    from qpython3.fastutils import uncompress
+    from qpython.fastutils import uncompress
 except:
     __is_cython_enabled__ = False
 else:

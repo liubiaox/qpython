@@ -20,10 +20,10 @@ if sys.version > '3':
     long = int
 
 from collections import OrderedDict
-from qpython3 import qwriter
-from qpython3.qtype import *  # @UnusedWildImport
-from qpython3.qcollection import qlist, QDictionary, qtable, QKeyedTable
-from qpython3.qtemporal import qtemporal, to_raw_qtemporal, array_to_raw_qtemporal
+from qpython import qwriter
+from qpython.qtype import *  # @UnusedWildImport
+from qpython.qcollection import qlist, QDictionary, qtable, QKeyedTable
+from qpython.qtemporal import qtemporal, to_raw_qtemporal, array_to_raw_qtemporal
 
 BINARY = OrderedDict()
 
