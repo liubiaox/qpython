@@ -262,7 +262,7 @@ class QWriter(object):
         if qtype == QGENERAL_LIST:
             self._write_generic_list(data)
         elif qtype == QCHAR:
-            self._write_string(data.tostring())
+            self._write_string(data.tobytes())
         else:
             self._buffer.write(struct.pack('=bxi', -qtype, len(data)))
             if data.dtype.type in (np.datetime64, np.timedelta64):
@@ -282,5 +282,5 @@ class QWriter(object):
                 for guid in data:
                     self._buffer.write(guid.bytes)
             else:
-                self._buffer.write(data.tostring())
+                self._buffer.write(data.tobytes())
 

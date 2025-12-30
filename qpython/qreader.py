@@ -193,7 +193,7 @@ class QReader(object):
                 raise QReaderException('Error while data decompression.')
 
             raw_data = uncompress(raw_data, np.intc(uncompressed_size))
-            raw_data = np.ndarray.tostring(raw_data)
+            raw_data = np.ndarray.tobytes(raw_data)
             self._buffer.wrap(raw_data)
         elif self._stream:
             raw_data = self._read_bytes(message_size - 8)
