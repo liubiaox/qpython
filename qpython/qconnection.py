@@ -17,10 +17,11 @@
 import socket
 import struct
 
-from . import MetaData, CONVERSION_OPTIONS
-from .qtype import QException
-from .qreader import QReader, QReaderException
-from .qwriter import QWriter, QWriterException
+from qpython import MetaData, CONVERSION_OPTIONS
+from qpython.qtype import QException
+from qpython.qreader import QReader, QReaderException
+from qpython.qwriter import QWriter, QWriterException
+
 
 
 class QConnectionException(Exception):
@@ -28,9 +29,11 @@ class QConnectionException(Exception):
     pass
 
 
+
 class QAuthenticationException(QConnectionException):
     '''Raised when a connection to the q service is denied.'''
     pass
+
 
 
 class MessageType(object):
@@ -38,6 +41,7 @@ class MessageType(object):
     ASYNC = 0
     SYNC = 1
     RESPONSE = 2
+
 
 
 class QConnection(object):
@@ -73,8 +77,9 @@ class QConnection(object):
        strings are encoded as q strings instead of chars, **Default**: ``False``
     '''
 
-    def __init__(self, host, port, username=None, password=None, timeout=None, encoding='latin-1',
-                 reader_class=None, writer_class=None, **options):
+    MAX_PROTOCOL_VERSION = 6
+
+    def __init__(self, host, port, username = None, password = None, timeout = None, encoding = 'latin-1', reader_class = None, writer_class = None, **options):
         self.host = host
         self.port = port
         self.username = username
@@ -104,12 +109,15 @@ class QConnection(object):
         if writer_class:
             self._writer_class = writer_class
 
+
     def __enter__(self):
         self.open()
         return self
 
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.close()
+
 
     @property
     def protocol_version(self):
@@ -118,6 +126,7 @@ class QConnection(object):
         :returns: `integer` -- version of the IPC protocol
         '''
         return self._protocol_version
+
 
     def open(self):
         '''Initialises connection to q service.
@@ -135,10 +144,9 @@ class QConnection(object):
             self._init_socket()
             self._initialize()
 
-            self._writer = self._writer_class(self._connection,
-                                              protocol_version=self._protocol_version,
-                                              encoding=self._encoding)
-            self._reader = self._reader_class(self._connection_file, encoding=self._encoding)
+            self._writer = self._writer_class(self._connection, protocol_version = self._protocol_version, encoding = self._encoding)
+            self._reader = self._reader_class(self._connection_file, encoding = self._encoding)
+
 
     def _init_socket(self):
         '''Initialises the socket used for communicating with a q service,'''
@@ -152,6 +160,7 @@ class QConnection(object):
             self._connection_file = None
             raise
 
+
     def close(self):
         '''Closes connection with the q service.'''
         if self._connection:
@@ -159,6 +168,7 @@ class QConnection(object):
             self._connection_file = None
             self._connection.close()
             self._connection = None
+
 
     def is_connected(self):
         '''Checks whether connection with a q service has been established. 
@@ -172,12 +182,12 @@ class QConnection(object):
         '''
         return True if self._connection else False
 
+
     def _initialize(self):
         '''Performs a IPC protocol handshake.'''
-        credentials = (f'{self.username if self.username else ""}:' 
-                       f'{self.password if self.password else ""}')
+        credentials = (self.username if self.username else '') + ':' + (self.password if self.password else '')
         credentials = credentials.encode(self._encoding)
-        self._connection.send(credentials + b'\3\0')
+        self._connection.send(credentials + bytes([self.MAX_PROTOCOL_VERSION, 0]))
         response = self._connection.recv(1)
 
         if len(response) != 1:
@@ -190,13 +200,12 @@ class QConnection(object):
                 self.close()
                 raise QAuthenticationException('Connection denied.')
 
-        self._protocol_version = min(struct.unpack('B', response)[0], 3)
+        self._protocol_version = min(struct.unpack('B', response)[0], self.MAX_PROTOCOL_VERSION)
+
 
     def __str__(self):
-        if self.username:
-            return f'{self.username}@:{self.host}:{self.port}'
-        else:
-            return f':{self.host}:{self.port}'
+        return '%s@:%s:%s' % (self.username, self.host, self.port) if self.username else ':%s:%s' % (self.host, self.port)
+
 
     def query(self, msg_type, query, *parameters, **options):
         '''Performs a query against a q service.
@@ -234,10 +243,10 @@ class QConnection(object):
         if not parameters or len(parameters) == 0:
             self._writer.write(query, msg_type, **self._options.union_dict(**options))
         else:
-            self._writer.write([query] + list(parameters), msg_type,
-                               **self._options.union_dict(**options))
+            self._writer.write([query] + list(parameters), msg_type, **self._options.union_dict(**options))
 
-    def sync(self, query, *parameters, **options):
+
+    def sendSync(self, query, *parameters, **options):
         '''Performs a synchronous query against a q service and returns parsed 
         data.
         
@@ -247,23 +256,23 @@ class QConnection(object):
         
         Executes a q expression:
         
-            >>> print(q.sync('til 10'))
+            >>> print(q.sendSync('til 10'))
             [0 1 2 3 4 5 6 7 8 9]
         
         Executes an anonymous q function with a single parameter:
         
-            >>> print(q.sync('{til x}', 10))
+            >>> print(q.sendSync('{til x}', 10))
             [0 1 2 3 4 5 6 7 8 9]
             
         Executes an anonymous q function with two parameters:
         
-            >>> print(q.sync('{y + til x}', 10, 1))
+            >>> print(q.sendSync('{y + til x}', 10, 1))
             [ 1  2  3  4  5  6  7  8  9 10]
             
-            >>> print(q.sync('{y + til x}', *[10, 1]))
+            >>> print(q.sendSync('{y + til x}', *[10, 1]))
             [ 1  2  3  4  5  6  7  8  9 10]
         
-        The :func:`.sync` is called from the overloaded :func:`.__call__` 
+        The :func:`.sendSync` is called from the overloaded :func:`.__call__` 
         function. This allows :class:`.QConnection` instance to be called as 
         a function:
         
@@ -292,16 +301,16 @@ class QConnection(object):
                  :class:`.QReaderException`
         '''
         self.query(MessageType.SYNC, query, *parameters, **options)
-        response = self.receive(data_only=False, **options)
+        response = self.receive(data_only = False, **options)
 
         if response.type == MessageType.RESPONSE:
             return response.data
         else:
-            self._writer.write(QException('nyi: qPython expected response message'),
-                               MessageType.ASYNC if response.type == MessageType.ASYNC else MessageType.RESPONSE)
+            self._writer.write(QException('nyi: qPython expected response message'), MessageType.ASYNC if response.type == MessageType.ASYNC else MessageType.RESPONSE)
             raise QReaderException('Received message of type: %s where response was expected')
 
-    def async_(self, query, *parameters, **options):
+
+    def sendAsync(self, query, *parameters, **options):
         '''Performs an asynchronous query and returns **without** retrieving of 
         the response.
         
@@ -311,11 +320,11 @@ class QConnection(object):
         
         Calls a anonymous function with a single parameter:
         
-            >>> q.async_('{til x}', 10)
+            >>> q.sendAsync('{til x}', 10)
         
         Executes a q expression:
         
-            >>> q.async_('til 10')
+            >>> q.sendAsync('til 10')
         
         :Parameters:
          - `query` (`string`) - query to be executed
@@ -329,7 +338,8 @@ class QConnection(object):
         '''
         self.query(MessageType.ASYNC, query, *parameters, **options)
 
-    def receive(self, data_only=True, **options):
+
+    def receive(self, data_only = True, **options):
         '''Reads and (optionally) parses the response from a q service.
         
         Retrieves query result along with meta-information:
@@ -371,5 +381,6 @@ class QConnection(object):
         result = self._reader.read(**self._options.union_dict(**options))
         return result.data if data_only else result
 
+
     def __call__(self, *parameters, **options):
-        return self.sync(parameters[0], *parameters[1:], **options)
+        return self.sendSync(parameters[0], *parameters[1:], **options)
